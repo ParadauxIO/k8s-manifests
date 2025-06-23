@@ -1,4 +1,11 @@
 helm install cilium cilium/cilium \
-  --version 1.17.5 \
-  --namespace kube-system \
-  --set operator.replicas=1
+                 --version 1.17.5 \
+                 --namespace kube-system \
+                 --set kubeProxyReplacement=true \
+                 --set kubeProxyReplacementMode=strict \
+                 --set k8sServiceHost=51.178.64.202 \
+                 --set k8sServicePort=6443 \
+                 --set dnsProxy.enabled=true \
+                 --set enableRemoteNodeIdentity=true \
+                 --set enableIPv4Masquerade=true \
+                 --set operator.replicas=1
