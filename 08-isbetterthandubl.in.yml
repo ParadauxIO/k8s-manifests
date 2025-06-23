@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: isbetterthandublin
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: isbetterthandublin
+  template:
+    metadata:
+      labels:
+        app: isbetterthandublin
+    spec:
+      containers:
+        - name: isbetterthandublin
+          image: isbetterthandubl.in:latest   # local image
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3030
+          env:
+            - name: NODE_ENV
+              value: "production"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: isbetterthandublin-service
+  namespace: default
+spec:
+  selector:
+    app: isbetterthandublin
+  ports:
+    - port: 80
+      targetPort: 3030
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: isbetterthandublin-ingress
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: letsencrypt-dns
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - isbetterthandubl.in
+        - '*.isbetterthandubl.in'
+      secretName: isbetterthandublin-tls
+  rules:
+    - host: isbetterthandubl.in
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: isbetterthandublin-service
+                port:
+                  number: 80
+    - host: '*.isbetterthandubl.in'
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: isbetterthandublin-service
+                port:
+                  number: 80
