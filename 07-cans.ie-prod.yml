@@ -2,9 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cans
-  namespace: default
+  namespace: production
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: cans
@@ -19,12 +19,17 @@ spec:
           imagePullPolicy: Never
           ports:
             - containerPort: 3030
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: cans-service
-  namespace: default
+  namespace: production
 spec:
   selector:
     app: cans
@@ -36,7 +41,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: cans-ingress
-  namespace: default
+  namespace: production
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     cert-manager.io/cluster-issuer: letsencrypt-dns
